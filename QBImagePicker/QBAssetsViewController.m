@@ -570,10 +570,25 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+
+    
+    
     QBImagePickerController *imagePickerController = self.imagePickerController;
     NSMutableOrderedSet *selectedAssets = imagePickerController.selectedAssets;
     
     PHAsset *asset = self.fetchResult[indexPath.item];
+    
+    if([self checkCloudStatusForPHAsset:asset]){
+        
+        [selectedAssets removeObjectAtIndex:0];
+        
+        // Deselect previous selected asset
+        if (self.lastSelectedItemIndexPath) {
+            [collectionView deselectItemAtIndexPath:self.lastSelectedItemIndexPath animated:NO];
+        }
+        
+        return;
+    }
     
     if (imagePickerController.allowsMultipleSelection) {
         if ([self isAutoDeselectEnabled] && selectedAssets.count > 0) {
@@ -659,6 +674,43 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     CGFloat width = (CGRectGetWidth(self.view.frame) - 2.0 * (numberOfColumns - 1)) / numberOfColumns;
     
     return CGSizeMake(width, width);
+}
+
+- (BOOL)checkCloudStatusForPHAsset:(PHAsset*)phAsset {
+    
+    if (phAsset) {
+        if (phAsset.mediaType == PHAssetMediaTypeVideo) {
+            PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+            options.version = PHVideoRequestOptionsVersionOriginal;
+            options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+            options.networkAccessAllowed = NO;
+            
+            [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+//                return NO;
+            }];
+            
+            return NO;
+        }
+        else if (phAsset.mediaType == PHAssetMediaTypeImage) {
+            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+            options.version = PHImageRequestOptionsVersionOriginal;
+            options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            options.resizeMode = PHImageRequestOptionsResizeModeNone;
+            options.networkAccessAllowed = NO;
+            options.synchronous = YES;
+            [[PHImageManager defaultManager] requestImageDataForAsset:phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+//                return NO;
+            }];
+            
+            return NO;
+        }
+        else {
+            return NO;
+        }
+    }
+    else {
+        return NO;
+    }
 }
 
 @end

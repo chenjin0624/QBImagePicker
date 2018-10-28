@@ -422,6 +422,7 @@
 					};
 					AAA8FE261ACDA0CE002A9710 = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 578V4P5TMW;
 					};
 					AAA8FE3E1ACDA0CE002A9710 = {
 						CreatedOnToolsVersion = 6.2;
@@ -738,6 +739,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 578V4P5TMW;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -753,6 +755,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 578V4P5TMW;
 				INFOPLIST_FILE = QBImagePickerDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.questbeat.$(PRODUCT_NAME:rfc1034identifier)";
