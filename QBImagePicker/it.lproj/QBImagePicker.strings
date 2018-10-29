@@ -8,14 +8,14 @@
 
 "albums.title" = "Photos";
 
-"assets.footer.photo" = "%ld Photo";
-"assets.footer.photos" = "%ld Photos";
-"assets.footer.video" = "%ld Video";
-"assets.footer.videos" = "%ld Videos";
-"assets.footer.photo-and-video" = "%ld Photo, %ld Video";
-"assets.footer.photos-and-video" = "%ld Photos, %ld Video";
-"assets.footer.photo-and-videos" = "%ld Photo, %ld Videos";
-"assets.footer.photos-and-videos" = "%ld Photos, %ld Videos";
+"assets.footer.photo" = "%ld foto";
+"assets.footer.photos" = "%ld foto";
+"assets.footer.video" = "%ld video";
+"assets.footer.videos" = "%ld video";
+"assets.footer.photo-and-video" = "%ld foto, %ld video";
+"assets.footer.photos-and-video" = "%ld foto, %ld video";
+"assets.footer.photo-and-videos" = "%ld foto, %ld video";
+"assets.footer.photos-and-videos" = "%ld foto, %ld video";
 
-"assets.toolbar.item-selected" = "%ld Item Selected";
-"assets.toolbar.items-selected" = "%ld Items Selected";
+"assets.toolbar.item-selected" = "%ld Articolo selezionato";
+"assets.toolbar.items-selected" = "%ld Articolo selezionato";

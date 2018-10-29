@@ -8,14 +8,14 @@
 
 "albums.title" = "Photos";
 
-"assets.footer.photo" = "%ld Photo";
-"assets.footer.photos" = "%ld Photos";
-"assets.footer.video" = "%ld Video";
-"assets.footer.videos" = "%ld Videos";
-"assets.footer.photo-and-video" = "%ld Photo, %ld Video";
-"assets.footer.photos-and-video" = "%ld Photos, %ld Video";
-"assets.footer.photo-and-videos" = "%ld Photo, %ld Videos";
-"assets.footer.photos-and-videos" = "%ld Photos, %ld Videos";
+"assets.footer.photo" = "%ld 사진들";
+"assets.footer.photos" = "%ld 사진들";
+"assets.footer.video" = "%ld 비디오";
+"assets.footer.videos" = "%ld 비디오";
+"assets.footer.photo-and-video" = "%ld 사진들, %ld 비디오";
+"assets.footer.photos-and-video" = "%ld 사진들, %ld 비디오";
+"assets.footer.photo-and-videos" = "%ld 사진들, %ld 비디오";
+"assets.footer.photos-and-videos" = "%ld 사진들, %ld 비디오";
 
-"assets.toolbar.item-selected" = "%ld Item Selected";
-"assets.toolbar.items-selected" = "%ld Items Selected";
+"assets.toolbar.item-selected" = "%ld 선택한 항목";
+"assets.toolbar.items-selected" = "%ld 선택한 항목";
