@@ -20,6 +20,7 @@
 - (BOOL)qb_imagePickerController:(QBImagePickerController *)imagePickerController shouldSelectAsset:(PHAsset *)asset;
 - (void)qb_imagePickerController:(QBImagePickerController *)imagePickerController didSelectAsset:(PHAsset *)asset;
 - (void)qb_imagePickerController:(QBImagePickerController *)imagePickerController didDeselectAsset:(PHAsset *)asset;
+- (void)qb_imagePickerController:(QBImagePickerController *)imagePickerController assetsViewController:(UIViewController*)assetsViewController didDeselectAsset:(PHAsset *)asset downloadCloud:(BOOL)downloadCloud;
 
 @end
 

@@ -598,6 +598,10 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
         
         [self requestCloudPHAsset:asset indexPath:indexPath];
         
+        if ([imagePickerController.delegate respondsToSelector:@selector(qb_imagePickerController:assetsViewController:didDeselectAsset:downloadCloud:)]) {
+            [imagePickerController.delegate qb_imagePickerController:imagePickerController assetsViewController:self didDeselectAsset:asset downloadCloud:YES];
+        }
+        
         QBAssetCell *cell = (QBAssetCell*)[collectionView cellForItemAtIndexPath:indexPath];
         
         [cell startActivity];
@@ -695,8 +699,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
             dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
             
             PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-            options.version = PHVideoRequestOptionsVersionOriginal;
-            options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+            options.version = PHVideoRequestOptionsVersionCurrent;
+            options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
             options.networkAccessAllowed = NO;
             __block BOOL isCloud = NO;
             [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
@@ -714,7 +718,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
         }
         else if (phAsset.mediaType == PHAssetMediaTypeImage) {
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-            options.version = PHImageRequestOptionsVersionOriginal;
+            options.version = PHVideoRequestOptionsVersionCurrent;
             options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             options.resizeMode = PHImageRequestOptionsResizeModeNone;
             options.networkAccessAllowed = NO;
