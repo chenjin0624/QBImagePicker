@@ -11,6 +11,8 @@
 @interface QBAssetCell ()
 
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet UIView *activityBackgroundView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityView;
 
 @end
 
@@ -22,6 +24,17 @@
     
     // Show/hide overlay view
     self.overlayView.hidden = !(selected && self.showsOverlayViewWhenSelected);
+}
+
+- (void)startActivity {
+    
+    self.activityBackgroundView.hidden = NO;
+    [self.activityView startAnimating];
+}
+
+- (void)stopActivity {
+    self.activityBackgroundView.hidden = YES;
+    [self.activityView stopAnimating];
 }
 
 @end

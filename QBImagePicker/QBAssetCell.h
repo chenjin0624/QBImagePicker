@@ -17,4 +17,8 @@
 
 @property (nonatomic, assign) BOOL showsOverlayViewWhenSelected;
 
+- (void)startActivity;
+
+- (void)stopActivity;
+
 @end

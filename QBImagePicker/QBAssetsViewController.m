@@ -14,6 +14,18 @@
 #import "QBAssetCell.h"
 #import "QBVideoIndicatorView.h"
 
+void safe_QBImagePicker_dispatch_sync_main(DISPATCH_NOESCAPE dispatch_block_t block)
+{
+    if([NSThread isMainThread]){
+        block();
+    }
+    else{
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            block();
+        });
+    }
+}
+
 static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     return CGSizeMake(size.width * scale, size.height * scale);
 }
@@ -65,7 +77,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 
 @property (nonatomic, assign) BOOL disableScrollToBottom;
 @property (nonatomic, strong) NSIndexPath *lastSelectedItemIndexPath;
-
+@property (nonatomic, strong) NSMutableArray* cloudRequestIds;
 @end
 
 @implementation QBAssetsViewController
@@ -73,6 +85,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.cloudRequestIds = [NSMutableArray array];
     
     [self setUpToolbarItems];
     [self resetCachedAssets];
@@ -146,6 +160,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 
 - (void)dealloc
 {
+    [self cancelAllCloudRequest];
+    
     // Deregister observer
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
@@ -445,6 +461,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     QBAssetCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"AssetCell" forIndexPath:indexPath];
+    [cell stopActivity];
     cell.tag = indexPath.item;
     cell.showsOverlayViewWhenSelected = self.imagePickerController.allowsMultipleSelection;
     
@@ -570,9 +587,6 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-
-    
-    
     QBImagePickerController *imagePickerController = self.imagePickerController;
     NSMutableOrderedSet *selectedAssets = imagePickerController.selectedAssets;
     
@@ -580,12 +594,13 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     
     if([self checkCloudStatusForPHAsset:asset]){
         
-        [selectedAssets removeObjectAtIndex:0];
+        [collectionView deselectItemAtIndexPath:indexPath animated:NO];
         
-        // Deselect previous selected asset
-        if (self.lastSelectedItemIndexPath) {
-            [collectionView deselectItemAtIndexPath:self.lastSelectedItemIndexPath animated:NO];
-        }
+        [self requestCloudPHAsset:asset indexPath:indexPath];
+        
+        QBAssetCell *cell = (QBAssetCell*)[collectionView cellForItemAtIndexPath:indexPath];
+        
+        [cell startActivity];
         
         return;
     }
@@ -593,12 +608,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     if (imagePickerController.allowsMultipleSelection) {
         if ([self isAutoDeselectEnabled] && selectedAssets.count > 0) {
             // Remove previous selected asset from set
-            [selectedAssets removeObjectAtIndex:0];
-            
-            // Deselect previous selected asset
-            if (self.lastSelectedItemIndexPath) {
-                [collectionView deselectItemAtIndexPath:self.lastSelectedItemIndexPath animated:NO];
-            }
+            [collectionView deselectItemAtIndexPath:indexPath animated:NO];
         }
         
         // Add asset to set
@@ -679,17 +689,28 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 - (BOOL)checkCloudStatusForPHAsset:(PHAsset*)phAsset {
     
     if (phAsset) {
+        
         if (phAsset.mediaType == PHAssetMediaTypeVideo) {
+            
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            
             PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
             options.version = PHVideoRequestOptionsVersionOriginal;
             options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
             options.networkAccessAllowed = NO;
-            
+            __block BOOL isCloud = NO;
             [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-//                return NO;
+                
+                if(nil == asset){
+                    isCloud = YES;
+                }
+                
+                dispatch_semaphore_signal(semaphore);
             }];
             
-            return NO;
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            
+            return isCloud;
         }
         else if (phAsset.mediaType == PHAssetMediaTypeImage) {
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
@@ -698,11 +719,15 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
             options.resizeMode = PHImageRequestOptionsResizeModeNone;
             options.networkAccessAllowed = NO;
             options.synchronous = YES;
+            __block BOOL isCloud = NO;
             [[PHImageManager defaultManager] requestImageDataForAsset:phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-//                return NO;
+                
+                if(nil == imageData){
+                    isCloud = YES;
+                }
             }];
             
-            return NO;
+            return isCloud;
         }
         else {
             return NO;
@@ -711,6 +736,69 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     else {
         return NO;
     }
+}
+
+
+- (void)requestCloudPHAsset:(PHAsset*)phAsset indexPath:(NSIndexPath*)indexPath{
+    
+    if (phAsset.mediaType == PHAssetMediaTypeVideo) {
+        PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+        options.version = PHVideoRequestOptionsVersionCurrent;
+        options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+        options.networkAccessAllowed = YES;
+        PHImageRequestID requestID = PHInvalidImageRequestID;
+        requestID = [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+            
+            safe_QBImagePicker_dispatch_sync_main(^{
+                
+                QBAssetCell *cell = (QBAssetCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+                
+                [cell stopActivity];
+                
+                [self.cloudRequestIds removeObject:@(requestID)];
+            });
+        }];
+        
+        if(requestID != PHInvalidImageRequestID){
+            [self.cloudRequestIds addObject:@(requestID)];
+        }
+    }
+    else if (phAsset.mediaType == PHAssetMediaTypeImage) {
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.version = PHImageRequestOptionsVersionCurrent;
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        options.resizeMode = PHImageRequestOptionsResizeModeNone;
+        options.networkAccessAllowed = YES;
+        options.synchronous = NO;
+        PHImageRequestID requestID = PHInvalidImageRequestID;
+        requestID = [[PHImageManager defaultManager] requestImageDataForAsset:phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+            
+            safe_QBImagePicker_dispatch_sync_main(^{
+                
+                QBAssetCell *cell = (QBAssetCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+                
+                [cell stopActivity];
+                
+                [self.cloudRequestIds removeObject:@(requestID)];
+            });
+            
+            
+        }];
+        
+        if(requestID != PHInvalidImageRequestID){
+            [self.cloudRequestIds addObject:@(requestID)];
+        }
+        
+    }
+}
+
+- (void)cancelAllCloudRequest {
+    
+    for (NSNumber* requestID in self.cloudRequestIds) {
+        
+        [[PHImageManager defaultManager] cancelImageRequest:requestID.intValue];
+    }
+    [self.cloudRequestIds removeAllObjects];
 }
 
 @end

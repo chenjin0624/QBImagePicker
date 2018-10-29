@@ -189,6 +189,19 @@
                                                 <outlet property="videoIcon" destination="rKh-6o-xw7" id="5VY-OW-Y7V"/>
                                             </connections>
                                         </view>
+                                        <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QZG-I9-fFf">
+                                            <rect key="frame" x="0.0" y="0.0" width="77.5" height="77.5"/>
+                                            <subviews>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="YqQ-vr-G7a">
+                                                    <rect key="frame" x="29" y="29" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <constraints>
+                                                <constraint firstItem="YqQ-vr-G7a" firstAttribute="centerX" secondItem="QZG-I9-fFf" secondAttribute="centerX" id="Ptv-xI-7OH"/>
+                                                <constraint firstItem="YqQ-vr-G7a" firstAttribute="centerY" secondItem="QZG-I9-fFf" secondAttribute="centerY" id="hNQ-ER-wpo"/>
+                                            </constraints>
+                                        </view>
                                         <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uyS-Tg-Iyl">
                                             <rect key="frame" x="0.0" y="0.0" width="77.5" height="77.5"/>
                                             <subviews>
@@ -214,13 +227,17 @@
                                     <constraint firstAttribute="trailing" secondItem="0aq-fn-r9R" secondAttribute="trailing" id="1xm-YR-1aF"/>
                                     <constraint firstAttribute="trailing" secondItem="uyS-Tg-Iyl" secondAttribute="trailing" id="1xt-jW-Drw"/>
                                     <constraint firstItem="uyS-Tg-Iyl" firstAttribute="leading" secondItem="fc0-k1-HNL" secondAttribute="leading" id="2gO-QS-g9M"/>
+                                    <constraint firstItem="QZG-I9-fFf" firstAttribute="leading" secondItem="fc0-k1-HNL" secondAttribute="leading" id="3hh-PM-2je"/>
                                     <constraint firstItem="0aq-fn-r9R" firstAttribute="leading" secondItem="fc0-k1-HNL" secondAttribute="leading" id="7WM-zv-4jB"/>
+                                    <constraint firstItem="QZG-I9-fFf" firstAttribute="top" secondItem="fc0-k1-HNL" secondAttribute="top" id="8Jr-wl-9UM"/>
                                     <constraint firstAttribute="bottom" secondItem="uyS-Tg-Iyl" secondAttribute="bottom" id="B4l-PZ-gqc"/>
+                                    <constraint firstAttribute="trailing" secondItem="QZG-I9-fFf" secondAttribute="trailing" id="EHG-Cy-29G"/>
                                     <constraint firstItem="BwJ-KE-LWZ" firstAttribute="top" secondItem="fc0-k1-HNL" secondAttribute="top" id="UJz-U6-yN2"/>
                                     <constraint firstAttribute="trailing" secondItem="BwJ-KE-LWZ" secondAttribute="trailing" id="ViU-xg-jBz"/>
                                     <constraint firstItem="BwJ-KE-LWZ" firstAttribute="leading" secondItem="fc0-k1-HNL" secondAttribute="leading" id="cOY-Et-5UE"/>
                                     <constraint firstAttribute="bottom" secondItem="0aq-fn-r9R" secondAttribute="bottom" id="iIA-2y-gLa"/>
                                     <constraint firstAttribute="bottom" secondItem="BwJ-KE-LWZ" secondAttribute="bottom" id="jYP-8U-0SU"/>
+                                    <constraint firstAttribute="bottom" secondItem="QZG-I9-fFf" secondAttribute="bottom" id="lJs-KS-wvF"/>
                                     <constraint firstItem="uyS-Tg-Iyl" firstAttribute="top" secondItem="fc0-k1-HNL" secondAttribute="top" id="q37-T4-cB2"/>
                                 </constraints>
                                 <variation key="default">
@@ -229,13 +246,15 @@
                                     </mask>
                                 </variation>
                                 <connections>
+                                    <outlet property="activityBackgroundView" destination="QZG-I9-fFf" id="Mka-h7-ptZ"/>
+                                    <outlet property="activityView" destination="YqQ-vr-G7a" id="9d5-m6-UNZ"/>
                                     <outlet property="imageView" destination="0aq-fn-r9R" id="smK-ma-TWL"/>
                                     <outlet property="overlayView" destination="uyS-Tg-Iyl" id="N6m-w2-m4M"/>
                                     <outlet property="videoIndicatorView" destination="BwJ-KE-LWZ" id="HkB-Dc-nzF"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
-                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="FooterView" id="sqR-h3-lW1">
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FooterView" id="sqR-h3-lW1">
                             <rect key="frame" x="0.0" y="87.5" width="375" height="66"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -270,7 +289,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qBb-2Q-SxP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1814" y="852"/>
+            <point key="canvasLocation" x="1813.5999999999999" y="851.42428785607206"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="TBV-v4-1AQ">
