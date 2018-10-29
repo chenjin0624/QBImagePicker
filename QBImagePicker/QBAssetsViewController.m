@@ -470,10 +470,14 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     CGSize itemSize = [(UICollectionViewFlowLayout *)collectionView.collectionViewLayout itemSize];
     CGSize targetSize = CGSizeScale(itemSize, [[UIScreen mainScreen] scale]);
     
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.version = PHVideoRequestOptionsVersionCurrent;
+//    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+    options.networkAccessAllowed = YES;
     [self.imageManager requestImageForAsset:asset
                                  targetSize:targetSize
                                 contentMode:PHImageContentModeAspectFill
-                                    options:nil
+                                    options:options
                               resultHandler:^(UIImage *result, NSDictionary *info) {
                                   if (cell.tag == indexPath.item) {
                                       cell.imageView.image = result;

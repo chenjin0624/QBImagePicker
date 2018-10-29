@@ -8,6 +8,10 @@
 
 #import "QBVideoIndicatorView.h"
 
+@interface QBVideoIndicatorView()
+@property (nonatomic, strong)CAGradientLayer *gradientLayer;
+@end
+
 @implementation QBVideoIndicatorView
 
 - (void)awakeFromNib
@@ -15,14 +19,21 @@
     [super awakeFromNib];
     
     // Add gradient layer
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    gradientLayer.frame = self.bounds;
-    gradientLayer.colors = @[
+    self.gradientLayer = [CAGradientLayer layer];
+    self.gradientLayer.frame = self.bounds;
+    self.gradientLayer.colors = @[
                              (__bridge id)[[UIColor clearColor] CGColor],
                              (__bridge id)[[UIColor blackColor] CGColor]
                              ];
     
-    [self.layer insertSublayer:gradientLayer atIndex:0];
+    [self.layer insertSublayer:self.gradientLayer atIndex:0];
+}
+
+- (void)layoutSubviews {
+    
+    [super layoutSubviews];
+    
+    self.gradientLayer.frame = self.bounds;
 }
 
 @end
