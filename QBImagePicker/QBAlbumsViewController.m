@@ -43,12 +43,47 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     
     [self setUpToolbarItems];
     
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    if (status == PHAuthorizationStatusNotDetermined) { // 用户还没有做出选择
+        // 弹框请求用户授权
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            
+            if (status == PHAuthorizationStatusAuthorized) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self requestAssets];
+                });
+            }
+        }];
+        
+    } else if (status == PHAuthorizationStatusAuthorized) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self requestAssets];
+        });
+        
+    } else {
+        
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:self.imagePickerController.noPermissionPrompt message:nil preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:self.imagePickerController.okPermissionPrompt
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (void)requestAssets {
+    
     // Fetch user albums and smart albums
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
     PHFetchResult *userAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
     self.fetchResults = @[smartAlbums, userAlbums];
     
     [self updateAssetCollections];
+    
+    [self.tableView reloadData];
     
     // Register observer
     [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];

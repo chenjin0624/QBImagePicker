@@ -30,6 +30,8 @@
     imagePickerController.mediaType = QBImagePickerMediaTypeAny;
     imagePickerController.allowsMultipleSelection = (indexPath.section == 1);
     imagePickerController.showsNumberOfSelectedAssets = YES;
+    imagePickerController.noPermissionPrompt = @"Can not access photos";
+    imagePickerController.okPermissionPrompt = @"OK";
     
     if (indexPath.section == 1) {
         switch (indexPath.row) {
